@@ -14,9 +14,9 @@
 
 #include "Wire.h"
 
-#define BMX055_ACCL_ADDR 0x18
-#define BMX055_GYRO_ADDR 0x68
-#define BMX055_MAGN_ADDR 0x10
+#define BMX055_ACCL_ADDR 0x19
+#define BMX055_GYRO_ADDR 0x69
+#define BMX055_MAGN_ADDR 0x13
 
 class BMX055
 {

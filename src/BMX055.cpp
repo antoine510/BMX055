@@ -23,114 +23,114 @@ uint8_t BMX055::beginAcc(char range)
 		break;
 	}
 	// Initialise I2C communication as MASTER
-	Wire1.begin();
+	Wire.begin();
 
 	// Start I2C Transmission
-	Wire1.beginTransmission(BMX055_ACCL_ADDR);
+	Wire.beginTransmission(BMX055_ACCL_ADDR);
 	// Select PMU_Range register
-	Wire1.write(0x0F);
+	Wire.write(0x0F);
 	// Range = +/- 2g
-	Wire1.write(range);
+	Wire.write(range);
 	// Stop I2C Transmission
-	Wire1.endTransmission();
+	Wire.endTransmission();
 
 	// Start I2C Transmission
-	Wire1.beginTransmission(BMX055_ACCL_ADDR);
+	Wire.beginTransmission(BMX055_ACCL_ADDR);
 	// Select PMU_BW register
-	Wire1.write(0x10);
+	Wire.write(0x10);
 	// Bandwidth = 7.81 Hz
-	Wire1.write(0x08);
+	Wire.write(0x08);
 	// Stop I2C Transmission
-	Wire1.endTransmission();
+	Wire.endTransmission();
 
 	// Start I2C Transmission
-	Wire1.beginTransmission(BMX055_ACCL_ADDR);
+	Wire.beginTransmission(BMX055_ACCL_ADDR);
 	// Select PMU_LPW register
-	Wire1.write(0x11);
+	Wire.write(0x11);
 	// Normal mode, Sleep duration = 0.5ms
-	Wire1.write(0x00);
+	Wire.write(0x00);
 	// Stop I2C Transmission on the device
-	Wire1.endTransmission();
+	Wire.endTransmission();
 }
 
 uint8_t BMX055::beginGyro()
 {
 
 	// Start I2C Transmission
-	Wire1.beginTransmission(BMX055_GYRO_ADDR);
+	Wire.beginTransmission(BMX055_GYRO_ADDR);
 	// Select Range register
-	Wire1.write(0x0F);
+	Wire.write(0x0F);
 	// Full scale = +/- 125 degree/s
-	Wire1.write(0x04);
+	Wire.write(0x04);
 	// Stop I2C Transmission
-	Wire1.endTransmission();
+	Wire.endTransmission();
 
 	// Start I2C Transmission
-	Wire1.beginTransmission(BMX055_GYRO_ADDR);
+	Wire.beginTransmission(BMX055_GYRO_ADDR);
 	// Select Bandwidth register
-	Wire1.write(0x10);
+	Wire.write(0x10);
 	// ODR = 100 Hz
-	Wire1.write(0x07);
+	Wire.write(0x07);
 	// Stop I2C Transmission
-	Wire1.endTransmission();
+	Wire.endTransmission();
 
 	// Start I2C Transmission
-	Wire1.beginTransmission(BMX055_GYRO_ADDR);
+	Wire.beginTransmission(BMX055_GYRO_ADDR);
 	// Select LPM1 register
-	Wire1.write(0x11);
+	Wire.write(0x11);
 	// Normal mode, Sleep duration = 2ms
-	Wire1.write(0x00);
+	Wire.write(0x00);
 	// Stop I2C Transmission
-	Wire1.endTransmission();
+	Wire.endTransmission();
 }
 
 uint8_t BMX055::beginMagn()
 {
 
 	// Start I2C Transmission
-	Wire1.beginTransmission(BMX055_MAGN_ADDR);
+	Wire.beginTransmission(BMX055_MAGN_ADDR);
 	// Select Mag register
-	Wire1.write(0x4B);
+	Wire.write(0x4B);
 	// Soft reset
-	Wire1.write(0x83);
+	Wire.write(0x83);
 	// Stop I2C Transmission
-	Wire1.endTransmission();
+	Wire.endTransmission();
 
 	// Start I2C Transmission
-	Wire1.beginTransmission(BMX055_MAGN_ADDR);
+	Wire.beginTransmission(BMX055_MAGN_ADDR);
 	// Select Mag register
-	Wire1.write(0x4C);
+	Wire.write(0x4C);
 	// Normal Mode, ODR = 10 Hz
-	Wire1.write(0x00);
+	Wire.write(0x00);
 	// Stop I2C Transmission
-	Wire1.endTransmission();
+	Wire.endTransmission();
 
 	// Start I2C Transmission
-	Wire1.beginTransmission(BMX055_MAGN_ADDR);
+	Wire.beginTransmission(BMX055_MAGN_ADDR);
 	// Select Mag register
-	Wire1.write(0x4E);
+	Wire.write(0x4E);
 	// X, Y, Z-Axis enabled
-	Wire1.write(0x84);
+	Wire.write(0x84);
 	// Stop I2C Transmission
-	Wire1.endTransmission();
+	Wire.endTransmission();
 
 	// Start I2C Transmission
-	Wire1.beginTransmission(BMX055_MAGN_ADDR);
+	Wire.beginTransmission(BMX055_MAGN_ADDR);
 	// Select Mag register
-	Wire1.write(0x51);
+	Wire.write(0x51);
 	// No. of Repetitions for X-Y Axis = 9
-	Wire1.write(0x04);
+	Wire.write(0x04);
 	// Stop I2C Transmission
-	Wire1.endTransmission();
+	Wire.endTransmission();
 
 	// Start I2C Transmission
-	Wire1.beginTransmission(BMX055_MAGN_ADDR);
+	Wire.beginTransmission(BMX055_MAGN_ADDR);
 	// Select Mag register
-	Wire1.write(0x52);
+	Wire.write(0x52);
 	// No. of Repetitions for Z-Axis = 15
-	Wire1.write(0x0F);
+	Wire.write(0x0F);
 	// Stop I2C Transmission
-	Wire1.endTransmission();
+	Wire.endTransmission();
 	delay(300);
 }
 
@@ -140,36 +140,36 @@ void BMX055::getAcceleration(float *x, float *y, float *z, float *accTotal)
 	for (int i = 0; i < 6; i++)
 	{
 		// Start I2C Transmission
-		Wire1.beginTransmission(BMX055_ACCL_ADDR);
+		Wire.beginTransmission(BMX055_ACCL_ADDR);
 		// Select data register
-		Wire1.write((2 + i));
+		Wire.write((2 + i));
 		// Stop I2C Transmission
-		Wire1.endTransmission();
+		Wire.endTransmission();
 		// Request 1 byte of data
-		Wire1.requestFrom(BMX055_ACCL_ADDR, 1);
+		Wire.requestFrom(BMX055_ACCL_ADDR, 1);
 		// Read 6 bytes of data
 		// xAccl lsb, xAccl msb, yAccl lsb, yAccl msb, zAccl lsb, zAccl msb
-		if (Wire1.available() == 1)
-			_data[i] = Wire1.read();
+		if (Wire.available() == 1)
+			_data[i] = Wire.read();
 	}
 
 	// Convert the data to 12-bits
 	int xAccl = ((_data[1] * 256) + (_data[0] & 0xF0)) / 16;
 	if (xAccl > 2047)
 		xAccl -= 4096;
-	*x = xAccl * accRange;
+	*x = xAccl * accRange * 9.81f;
 
 	int yAccl = ((_data[3] * 256) + (_data[2] & 0xF0)) / 16;
 	if (yAccl > 2047)
 		yAccl -= 4096;
-	*y = yAccl * accRange;
+	*y = yAccl * accRange * 9.81f;
 
 	int zAccl = ((_data[5] * 256) + (_data[4] & 0xF0)) / 16;
 	if (zAccl > 2047)
 		zAccl -= 4096;
-	*z = zAccl * accRange;
+	*z = zAccl * accRange * 9.81f;
 
-	*accTotal = 9.81 * sqrt((sq(*x) + sq(*y) + sq(*z)));
+	*accTotal = sqrt((sq(*x) + sq(*y) + sq(*z)));
 }
 
 float BMX055::getAccelerationX()
@@ -177,17 +177,17 @@ float BMX055::getAccelerationX()
 	for (int i = 0; i < 6; i++)
 	{
 		// Start I2C Transmission
-		Wire1.beginTransmission(BMX055_ACCL_ADDR);
+		Wire.beginTransmission(BMX055_ACCL_ADDR);
 		// Select data register
-		Wire1.write((2 + i));
+		Wire.write((2 + i));
 		// Stop I2C Transmission
-		Wire1.endTransmission();
+		Wire.endTransmission();
 		// Request 1 byte of data
-		Wire1.requestFrom(BMX055_ACCL_ADDR, 1);
+		Wire.requestFrom(BMX055_ACCL_ADDR, 1);
 		// Read 6 bytes of data
 		// xAccl lsb, xAccl msb, yAccl lsb, yAccl msb, zAccl lsb, zAccl msb
-		if (Wire1.available() == 1)
-			_data[i] = Wire1.read();
+		if (Wire.available() == 1)
+			_data[i] = Wire.read();
 	}
 
 	// Convert the data to 12-bits
@@ -203,17 +203,17 @@ float BMX055::getAccelerationY()
 	for (int i = 0; i < 6; i++)
 	{
 		// Start I2C Transmission
-		Wire1.beginTransmission(BMX055_ACCL_ADDR);
+		Wire.beginTransmission(BMX055_ACCL_ADDR);
 		// Select data register
-		Wire1.write((2 + i));
+		Wire.write((2 + i));
 		// Stop I2C Transmission
-		Wire1.endTransmission();
+		Wire.endTransmission();
 		// Request 1 byte of data
-		Wire1.requestFrom(BMX055_ACCL_ADDR, 1);
+		Wire.requestFrom(BMX055_ACCL_ADDR, 1);
 		// Read 6 bytes of data
 		// xAccl lsb, xAccl msb, yAccl lsb, yAccl msb, zAccl lsb, zAccl msb
-		if (Wire1.available() == 1)
-			_data[i] = Wire1.read();
+		if (Wire.available() == 1)
+			_data[i] = Wire.read();
 	}
 
 	int yAccl = ((_data[3] * 256) + (_data[2] & 0xF0)) / 16;
@@ -228,17 +228,17 @@ float BMX055::getAccelerationZ()
 	for (int i = 0; i < 6; i++)
 	{
 		// Start I2C Transmission
-		Wire1.beginTransmission(BMX055_ACCL_ADDR);
+		Wire.beginTransmission(BMX055_ACCL_ADDR);
 		// Select data register
-		Wire1.write((2 + i));
+		Wire.write((2 + i));
 		// Stop I2C Transmission
-		Wire1.endTransmission();
+		Wire.endTransmission();
 		// Request 1 byte of data
-		Wire1.requestFrom(BMX055_ACCL_ADDR, 1);
+		Wire.requestFrom(BMX055_ACCL_ADDR, 1);
 		// Read 6 bytes of data
 		// xAccl lsb, xAccl msb, yAccl lsb, yAccl msb, zAccl lsb, zAccl msb
-		if (Wire1.available() == 1)
-			_data[i] = Wire1.read();
+		if (Wire.available() == 1)
+			_data[i] = Wire.read();
 	}
 
 	int zAccl = ((_data[5] * 256) + (_data[4] & 0xF0)) / 16;
@@ -254,36 +254,36 @@ float BMX055::getAccelerationTotal()
 	for (int i = 0; i < 6; i++)
 	{
 		// Start I2C Transmission
-		Wire1.beginTransmission(BMX055_ACCL_ADDR);
+		Wire.beginTransmission(BMX055_ACCL_ADDR);
 		// Select data register
-		Wire1.write((2 + i));
+		Wire.write((2 + i));
 		// Stop I2C Transmission
-		Wire1.endTransmission();
+		Wire.endTransmission();
 		// Request 1 byte of data
-		Wire1.requestFrom(BMX055_ACCL_ADDR, 1);
+		Wire.requestFrom(BMX055_ACCL_ADDR, 1);
 		// Read 6 bytes of data
 		// xAccl lsb, xAccl msb, yAccl lsb, yAccl msb, zAccl lsb, zAccl msb
-		if (Wire1.available() == 1)
-			_data[i] = Wire1.read();
+		if (Wire.available() == 1)
+			_data[i] = Wire.read();
 	}
 
 	// Convert the data to 12-bits
 	int xAccl = ((_data[1] * 256) + (_data[0] & 0xF0)) / 16;
 	if (xAccl > 2047)
 		xAccl -= 4096;
-	float x = xAccl * accRange;
+	float x = xAccl * accRange * 9.81f;
 
 	int yAccl = ((_data[3] * 256) + (_data[2] & 0xF0)) / 16;
 	if (yAccl > 2047)
 		yAccl -= 4096;
-	float y = yAccl * accRange;
+	float y = yAccl * accRange * 9.81f;
 
 	int zAccl = ((_data[5] * 256) + (_data[4] & 0xF0)) / 16;
 	if (zAccl > 2047)
 		zAccl -= 4096;
-	float z = zAccl * accRange;
+	float z = zAccl * accRange * 9.81f;
 
-	float accTotal = 9.81 * sqrt((sq(x) + sq(y) + sq(z)));
+	float accTotal = sqrt((sq(x) + sq(y) + sq(z)));
 	return accTotal;
 }
 
@@ -293,17 +293,17 @@ void BMX055::getMagnet(int *x, int *y, int *z)
 	for (int i = 0; i < 6; i++)
 	{
 		// Start I2C Transmission
-		Wire1.beginTransmission(BMX055_MAGN_ADDR);
+		Wire.beginTransmission(BMX055_MAGN_ADDR);
 		// Select data register
-		Wire1.write((66 + i));
+		Wire.write((66 + i));
 		// Stop I2C Transmission
-		Wire1.endTransmission();
+		Wire.endTransmission();
 		// Request 1 byte of data
-		Wire1.requestFrom(BMX055_MAGN_ADDR, 1);
+		Wire.requestFrom(BMX055_MAGN_ADDR, 1);
 		// Read 6 bytes of data
 		// xMag lsb, xMag msb, yMag lsb, yMag msb, zMag lsb, zMag msb
-		if (Wire1.available() == 1)
-			_data[i] = Wire1.read();
+		if (Wire.available() == 1)
+			_data[i] = Wire.read();
 	}
 
 	// Convert the data
@@ -328,17 +328,17 @@ void BMX055::getRotation(int *x, int *y, int *z)
 	for (int i = 0; i < 6; i++)
 	{
 		// Start I2C Transmission
-		Wire1.beginTransmission(BMX055_GYRO_ADDR);
+		Wire.beginTransmission(BMX055_GYRO_ADDR);
 		// Select data register
-		Wire1.write((2 + i));
+		Wire.write((2 + i));
 		// Stop I2C Transmission
-		Wire1.endTransmission();
+		Wire.endTransmission();
 		// Request 1 byte of data
-		Wire1.requestFrom(BMX055_GYRO_ADDR, 1);
+		Wire.requestFrom(BMX055_GYRO_ADDR, 1);
 		// Read 6 bytes of data
 		// xGyro lsb, xGyro msb, yGyro lsb, yGyro msb, zGyro lsb, zGyro msb
-		if (Wire1.available() == 1)
-			_data[i] = Wire1.read();
+		if (Wire.available() == 1)
+			_data[i] = Wire.read();
 	}
 
 	// Convert the data
