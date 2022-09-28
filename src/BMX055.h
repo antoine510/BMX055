@@ -26,12 +26,16 @@ public:
 	uint8_t beginGyro(void);
 	uint8_t beginMagn(void);
 	void getAcceleration(float *x, float *y, float *z, float *accTotal);
+	void getAcceleration(short *x, short *y, short *z);
 	float getAccelerationX();
 	float getAccelerationY();
 	float getAccelerationZ();
 	float getAccelerationTotal();
 	void getMagnet(int *x, int *y, int *z);
 	void getRotation(int *x, int *y, int *z);
+	
+	bool canRead5Frames();
+	void readFIFO5(short* xyz5);
 
 private:
 	unsigned int _data[6];

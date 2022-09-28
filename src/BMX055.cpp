@@ -1,5 +1,11 @@
 #include "BMX055.h"
 
+#define FIFO_CONFIG_0 0x30
+#define FIFO_CONFIG_1 0x3e
+#define FIFO_DATA 0x3f
+#define INT_EN_1 0x17
+#define INT_STATUS_1 0x0a
+
 BMX055::BMX055(){}
 
 uint8_t BMX055::beginAcc(char range)
@@ -24,6 +30,7 @@ uint8_t BMX055::beginAcc(char range)
 	}
 	// Initialise I2C communication as MASTER
 	Wire.begin();
+	Wire.setClock(400000);
 
 	// Start I2C Transmission
 	Wire.beginTransmission(BMX055_ACCL_ADDR);
@@ -38,18 +45,27 @@ uint8_t BMX055::beginAcc(char range)
 	Wire.beginTransmission(BMX055_ACCL_ADDR);
 	// Select PMU_BW register
 	Wire.write(0x10);
-	// Bandwidth = 7.81 Hz
+	// Bandwidth = 1 kHz
 	Wire.write(0x08);
 	// Stop I2C Transmission
 	Wire.endTransmission();
-
-	// Start I2C Transmission
+	
 	Wire.beginTransmission(BMX055_ACCL_ADDR);
-	// Select PMU_LPW register
-	Wire.write(0x11);
-	// Normal mode, Sleep duration = 0.5ms
-	Wire.write(0x00);
-	// Stop I2C Transmission on the device
+	Wire.write(FIFO_CONFIG_0);
+	// Set FIFO watermark level to 5 frames
+	Wire.write(0x05);
+	Wire.endTransmission();
+	
+	Wire.beginTransmission(BMX055_ACCL_ADDR);
+	Wire.write(INT_EN_1);
+	// Enable FIFO watermark interrupt
+	Wire.write(0x40);
+	Wire.endTransmission();
+	
+	Wire.beginTransmission(BMX055_ACCL_ADDR);
+	Wire.write(FIFO_CONFIG_1);
+	// STREAM fifo with X, Y and Z
+	Wire.write(0x80);
 	Wire.endTransmission();
 }
 
@@ -170,6 +186,71 @@ void BMX055::getAcceleration(float *x, float *y, float *z, float *accTotal)
 	*z = zAccl * accRange * 9.81f;
 
 	*accTotal = sqrt((sq(*x) + sq(*y) + sq(*z)));
+}
+
+bool BMX055::canRead5Frames() {
+	Wire.beginTransmission(BMX055_ACCL_ADDR);
+	Wire.write(INT_STATUS_1);
+	Wire.endTransmission();
+	Wire.requestFrom(BMX055_ACCL_ADDR, 1);
+	return Wire.read() & 0x40;
+}
+
+void BMX055::readFIFO5(short* xyz5) {
+	Wire.beginTransmission(BMX055_ACCL_ADDR);
+	Wire.write(FIFO_DATA);
+	Wire.endTransmission();
+	Wire.requestFrom(BMX055_ACCL_ADDR, 30);	// 5 frames
+	for(byte f = 0; f < 5; ++f) {
+		for(byte i = 0; i < 6; ++i) {
+			_data[i] = Wire.read();
+		}
+		// Convert the data to 12-bits
+		xyz5[3 * f] = ((_data[1] * 256) + (_data[0] & 0xF0)) / 16;
+		if (xyz5[3 * f] > 2047)
+			xyz5[3 * f] -= 4096;
+
+		xyz5[3 * f + 1] = ((_data[3] * 256) + (_data[2] & 0xF0)) / 16;
+		if (xyz5[3 * f + 1] > 2047)
+			xyz5[3 * f + 1] -= 4096;
+
+		xyz5[3 * f + 2] = ((_data[5] * 256) + (_data[4] & 0xF0)) / 16;
+		if (xyz5[3 * f + 2] > 2047)
+			xyz5[3 * f + 2] -= 4096;
+	}
+}
+
+void BMX055::getAcceleration(short *x, short *y, short *z)
+{
+
+	for (int i = 0; i < 6; i++)
+	{
+		// Start I2C Transmission
+		Wire.beginTransmission(BMX055_ACCL_ADDR);
+		// Select data register
+		Wire.write((2 + i));
+		// Stop I2C Transmission
+		Wire.endTransmission();
+		// Request 1 byte of data
+		Wire.requestFrom(BMX055_ACCL_ADDR, 1);
+		// Read 6 bytes of data
+		// xAccl lsb, xAccl msb, yAccl lsb, yAccl msb, zAccl lsb, zAccl msb
+		if (Wire.available() == 1)
+			_data[i] = Wire.read();
+	}
+
+	// Convert the data to 12-bits
+	*x = ((_data[1] * 256) + (_data[0] & 0xF0)) / 16;
+	if (*x > 2047)
+		*x -= 4096;
+
+	*y = ((_data[3] * 256) + (_data[2] & 0xF0)) / 16;
+	if (*y > 2047)
+		*y -= 4096;
+
+	*z = ((_data[5] * 256) + (_data[4] & 0xF0)) / 16;
+	if (*z > 2047)
+		*z -= 4096;
 }
 
 float BMX055::getAccelerationX()
